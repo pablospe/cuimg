@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <sys/time.h>
 
 #include <cuimg/profiler.h>
 #include <cuimg/video_capture.h>
@@ -17,6 +18,13 @@
 using namespace cuimg;
 using namespace cv;
 using namespace std;
+
+int64_t get_systemtime_usecs()
+{
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+  return (int64_t) tv.tv_sec * 1000000LL + (int64_t) tv.tv_usec;
+}
 
 // trajectory store a short term trajectory.
 struct trajectory
@@ -47,10 +55,7 @@ void update_trajectories(vector<trajectory>& v, TR& pset)
       assert(parts[i].age != 1 || v[i].history.empty());
       v[i].history.push_back( Point(parts[i].pos.c(),parts[i].pos.r()) );
       v[i].alive = true;
-      if (v[i].history.size() > 20)
-      {
-        v[i].history.pop_front();
-      }
+      if (v[i].history.size() > 20) v[i].history.pop_front();
     }
     else
     {
@@ -121,11 +126,11 @@ int main(int argc, char* argv[])
   int NSCALES = atoi(argv[1]);
   if (NSCALES <= 0 or NSCALES >= 10)
   {
-    cout << "NSCALE should be > 0 and < 10, got " << argv[2] << endl;
+    cout << "NSCALE should be > 0 and < 10, got " << argv[1] << endl;
     return -1;
   }
 
-  // Detector threshold (lower it for more points) - 10 default
+  // Detector threshold (lower it for more points) - 50 for example
   int detector_threshold = atoi(argv[2]);
 
   obox2d domain(video.get(CV_CAP_PROP_FRAME_HEIGHT), video.get(CV_CAP_PROP_FRAME_WIDTH));
@@ -170,13 +175,14 @@ int main(int argc, char* argv[])
     double time_update_trajectories = ((double) getTickCount() - tic)*1000./getTickFrequency();
 
 
+    int64_t t = get_systemtime_usecs();
     tic = (double) getTickCount();
     int s = 0;
     draw_trajectories(trajectories[s], input_);
-    double time_draw_trajectories = ((double) getTickCount() - tic)*1000./getTickFrequency();
+    double time_draw_trajectories = ((double) getTickCount() - tic)*1000./getTickFrequency();  // time with OpenCV
     cout << "update_trajectories (milisec): "   << time_update_trajectories;
-//     cout << endl;
     cout << " -- draw_trajectories (milisec): " << time_draw_trajectories << endl;
+    std::cout << "tr1.run took " << (get_systemtime_usecs() - t)/1000.0 << "ms" << std::endl;  // time with gettimeofday()
 
 //     total += time_update_trajectories + time_draw_trajectories;
 //     total += time_draw_trajectories;
@@ -189,7 +195,6 @@ int main(int argc, char* argv[])
   }
 
   cout << "Avegare time: " << total/n << " milisec.\n";
-
 
   return 0;
 }

@@ -14,3 +14,6 @@ SET(CMAKE_VERBOSE_MAKEFILE ON)
 
 ADD_EXECUTABLE(tracking_sample ${sources})
 target_link_libraries(tracking_sample ${OpenCV_LIBS} gomp)
+
+ADD_EXECUTABLE(tracking_sample2 main2.cc)
+target_link_libraries(tracking_sample2 ${OpenCV_LIBS} gomp)

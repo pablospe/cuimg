@@ -65,44 +65,44 @@ void update_trajectories(vector<trajectory>& v, TR& pset)
 
 void draw_trajectory(trajectory &current, Mat &img)
 {
-	if (current.alive)
-	{
-		int n = current.history.size();
-		int i=0;
-		for(auto it=current.history.begin(); it!=current.history.end(); ++it)
-		{
-// 			img.at<Vec3b>(*it) = Vec3b(255*i/n, 124*i/n + 125, 0);
-// 			circle(img, *it, 0, Scalar(255*i/n, 124*i/n + 125, 0), 2);
-			line(img, *it, *it, Scalar(255*i/n, 124*i/n + 125, 0), 2);
-			i++;
-		}
-	}
+  if(current.alive)
+  {
+    int n = current.history.size();
+    int i = 0;
 
+    for(auto it = current.history.begin(); it != current.history.end(); ++it)
+    {
+//       img.at<Vec3b>(*it) = Vec3b(255*i/n, 124*i/n + 125, 0);
+//       circle(img, *it, 0, Scalar(255*i/n, 124*i/n + 125, 0), 2);
+      line(img, *it, *it, Scalar(255*i/n, 124*i/n + 125, 0), 2);
+      i++;
+    }
+  }
 
-// 	// showing only the last one
-// 	if (current.alive)
-// 	{
-// 		Point p = current.history.back();
-// // 		Point p(i_p.c(), i_p.r());
-// 		line(img, p, p, Scalar(0,255,0), 3);
-// 	}
-
+/*
+  // showing only the last one
+  if(current.alive)
+  {
+    Point p = current.history.back();
+    line(img, p, p, Scalar(0, 255, 0), 3);
+  }
+*/
 }
 
 void draw_trajectories(vector<trajectory> &trajectories, Mat &img)
 {
-    for (unsigned i = 0; i < trajectories.size(); i++)
-	{
-		draw_trajectory(trajectories[i], img);
-	}
+  for(unsigned i = 0; i < trajectories.size(); i++)
+  {
+    draw_trajectory(trajectories[i], img);
+  }
 }
 
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
   VideoCapture video;
 
-  if (argc == 4)
+  if(argc == 4)
   {
     video.open(argv[3]);
   }
